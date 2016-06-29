@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>jQuery UI Droppable - Visual feedback</title>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <script src="jquery.ui.touch-punch.min.js"></script>
+        <link rel="stylesheet" href="/resources/demos/style.css">
+        <style>
+            #draggable1, #draggable2 { width: 120px; height: 120px; padding: 0.5em; float: left; margin: 10px 10px 10px 0; }
+            #droppable1, #droppable2 { width: 120px; height: 120px; padding: 0.5em; float: left; margin: 10px; }
+            h3 { clear: left; }
+        </style>
+        <script>
+
+            (function () {
+                // Your base, I'm in it!
+                var originalAddClassMethod = jQuery.fn.addClass;
+
+                jQuery.fn.addClass = function () {
+                    // Execute the original method.
+                    var result = originalAddClassMethod.apply(this, arguments);
+
+                    // trigger a custom event
+                    jQuery(this).trigger('cssClassChanged');
+
+                    // return the original result
+                    return result;
+                }
+            })();
+
+      // document ready function
+            $(function () {
+                $('#droppable1, #droppable2').bind('cssClassChanged', function () {
+                    //do stuff here
+                    console.log('on me');
+                });
+            });
+
+            $(function () {
+                $("#draggable1, #draggable2").draggable({revert: true});
+                $("#draggable1, #draggable12").draggable();
+                
+                $('#droppable1, #droppable2').droppable({
+                    hoverClass: "ui-state-hover",
+                    hover: function (event, ui) {
+                        console.log('on me');
+                    },
+                    drop: function (event, ui) {
+                        return false;
+                        $(this)
+                                .addClass("ui-state-highlight")
+                                .find("p")
+                                .html("Dropped!");
+                    }
+                });
+
+                $("#draggable2").draggable();
+
+            });
+        </script>
+    </head>
+    <body>
+
+        <h3>Feedback on hover:</h3>
+
+        <div id="draggable1" class="ui-widget-content">
+            <p></p>
+        </div>
+        
+        <div id="draggable2" class="ui-widget-content">
+            <p></p>
+        </div>
+
+        <div id="droppable1" class="ui-widget-header">
+            <p>Drop here</p>
+        </div>
+        
+        <div id="droppable2" class="ui-widget-header">
+            <p>Drop here</p>
+        </div>
+
+        <h3>Feedback on activating draggable:</h3>
+
+        <!--<div id="draggable2" class="ui-widget-content">
+          <p>Drag me to my target</p>
+        </div>
+         
+        <div id="droppable2" class="ui-widget-header">
+          <p>Drop here</p>
+        </div>-->
+
+
+    </body>
+</html>
