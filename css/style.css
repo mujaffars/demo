@@ -1,5 +1,5 @@
 .board{
-    width: 80%;
+    width: 50%;
     margin: 0 auto;
     margin-top: 10%;
     margin-left: 10%;
@@ -26,9 +26,12 @@
     flex: 1;
     height: 100%;
     font-size: 40px;
-    border-radius: 40px;
+    /*border-radius: 40px;*/
     border: 1px solid;
 }
 #boardDragger .cell{
     opacity: 0;
+}
+.alert-success{
+    background-color: green;
 }
