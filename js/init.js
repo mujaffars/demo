@@ -1,6 +1,6 @@
 var divQueue = [];
-var tblRows = 5;
-var tblCols = 5;
+var tblRows = 4;
+var tblCols = 4;
 var lastValidCol = '';
 var lastValidRow = '';
 (function () {
