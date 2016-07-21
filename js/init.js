@@ -1,4 +1,6 @@
 var divQueue = [];
+var tblRows = 5;
+var tblCols = 5;
 var lastValidCol = '';
 var lastValidRow = '';
 (function () {
@@ -8,10 +10,8 @@ var lastValidRow = '';
     jQuery.fn.addClass = function () {
         // Execute the original method.
         var result = originalAddClassMethod.apply(this, arguments);
-
         // trigger a custom event
         jQuery(this).trigger('cssClassChanged');
-
         // return the original result
         return result;
     }
@@ -20,8 +20,19 @@ var lastValidRow = '';
 $(function () { // DOM ready
     //$(window).resize(on_resize);
     //init_game();
-    createTable(4, 4);
-    createTableDragger(4, 4);
+    createTable(tblRows, tblCols);
+    createTableDragger(tblRows, tblCols);
+    console.log($('.firstRow').innerWidth());
+    console.log(eval(parseInt($('.firstRow').innerWidth()) / tblCols));
+    var fontSize = [
+        {
+            locator: '.row',
+            initialSize: 44
+        }
+    ]
+    $.each(fontSize, function (index, val) {
+        changeCss(val.locator, 'height:' + eval(parseInt($('.firstRow').innerWidth()) / tblCols) + 'px;');
+    })
 });
 
 function createTable(rows, column) {
@@ -30,8 +41,12 @@ function createTable(rows, column) {
         class: 'table board'
     });
     for (i = 0; i < rows; i++) {
+        var widthCheckClass = '';
+        if (i === 0) {
+            widthCheckClass = 'firstRow';
+        }
         var row = jQuery("<div>", {
-            class: 'row'
+            class: 'row ' + widthCheckClass
         });
         for (j = 0; j < column; j++) {
             var col = jQuery("<div>", {
@@ -63,7 +78,9 @@ function createTableDragger(rows, column) {
         for (j = 0; j < column; j++) {
             var col = jQuery("<div>", {
                 id: 'cell_' + i + '_' + j,
-                class: 'cell'
+                class: 'cell',
+                row: i,
+                col: j
             });
             var dragger = jQuery("<div>", {
                 id: 'drag_' + i + '_' + j,
@@ -88,7 +105,6 @@ function bindEvents() {
         if ($.inArray($(this).attr('id'), divQueue) === -1) {
             var dragRow = $(this).attr('row');
             var dragCol = $(this).attr('col');
-            divQueue.push($(this).attr('id'));
             //console.log(divQueue);
             //do stuff here
             if ($('.pr' + $(this).attr('id')).hasClass('alert alert-success')) {
@@ -96,10 +112,12 @@ function bindEvents() {
             } else {
                 if (isValidMove(dragRow, dragCol) === 'true') {
                     $('.pr' + $(this).attr('id')).addClass('alert alert-success');
+                    divQueue.push($(this).attr('id'));
                 }
             }
         } else {
-            // Get the last element of array
+            console.log('we are in remove');
+            // Get the second last element of array
             var second_last_elem = divQueue[divQueue.length - 2]
 
             if (second_last_elem === $(this).attr('id')) {
@@ -108,6 +126,7 @@ function bindEvents() {
                 var last_elem = divQueue[divQueue.length - 1];
                 $('.pr' + last_elem).removeClass('alert alert-success');
                 divQueue.pop();
+                console.log(divQueue);
             }
 
 //            divQueue.forEach(function (item) {
@@ -126,6 +145,22 @@ function bindEvents() {
 //            }
         }
     });
+
+    $("#boardDragger").find('.cell').bind('cssClassChanged', function () {
+
+        if (divQueue.length === 2) {
+            var cellRow = $(this).attr('row');
+            var cellCol = $(this).attr('col');
+            if (divQueue[0] === 'drag_' + cellRow + '_' + cellCol) {
+                lastValidRow = parseInt(cellRow);
+                lastValidCol = parseInt(cellCol);
+                var last_elem = divQueue[divQueue.length - 1];
+                $('.pr' + last_elem).removeClass('alert alert-success');
+                divQueue.pop();
+                console.log('Changed the cell css class');
+            }
+        }
+    })
 
     $("#boardDragger").find(".dragger").draggable({
         revert: true,
@@ -148,7 +183,15 @@ function bindEvents() {
         }
     });
 
+    $("#boardDragger").find('.cell').droppable({
+        hoverClass: "ui-state-hover",
+        drop: function (event, ui) {
+
+        }
+    });
+
     $('body').bind('touchstart', function (e) {
+        console.log('touchstart');
         divQueue = [];
         lastValidCol = '';
         lastValidRow = '';
@@ -203,7 +246,7 @@ function isValidMove(dragRow, dragCol) {
         if (rightCol >= 0) {
             validMoves.push(lastValidRow + "_" + rightCol);
         }
-        console.log(validMoves);
+        //console.log(validMoves);
         if ($.inArray(dragRow + "_" + dragCol, validMoves) !== -1) {
             lastValidRow = parseInt(dragRow);
             lastValidCol = parseInt(dragCol);
@@ -212,3 +255,22 @@ function isValidMove(dragRow, dragCol) {
     }
 }
 
+function changeCss(className, classValue) {
+    // we need invisible container to store additional css definitions
+    var cssMainContainer = $('#css-modifier-container');
+    if (cssMainContainer.length == 0) {
+        var cssMainContainer = $('<div id="css-modifier-container"></div>');
+        cssMainContainer.hide();
+        cssMainContainer.appendTo($('head'));
+    }
+
+    // and we need one div for each class
+    classContainer = cssMainContainer.find('div[data-class="' + className + '"]');
+    if (classContainer.length == 0) {
+        classContainer = $('<div data-class="' + className + '"></div>');
+        classContainer.appendTo(cssMainContainer);
+    }
+
+    // append additional style
+    classContainer.html('<style>' + className + ' {' + classValue + '}</style>');
+}

@@ -1,5 +1,5 @@
 .board{
-    width: 50%;
+    width: 80%;
     margin: 0 auto;
     margin-top: 10%;
     margin-left: 10%;
@@ -17,7 +17,8 @@
   border: 1px solid #444;
   padding: 15px;
   text-align: center;
-  height: 50px;
+  margin: 4px;
+  border-radius: 4px;
 }
 .dragger{
     flex: 1;
@@ -25,8 +26,8 @@
 #boardDragger .dragger{
     flex: 1;
     height: 100%;
-    font-size: 40px;
-    /*border-radius: 40px;*/
+    font-size: 20px;
+    border-radius: 40px;
     border: 1px solid;
 }
 #boardDragger .cell{
