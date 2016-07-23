@@ -1,8 +1,10 @@
 var divQueue = [];
-var tblRows = 4;
-var tblCols = 4;
+var tblRows = 3;
+var tblCols = 3;
 var lastValidCol = '';
 var lastValidRow = '';
+var fontVW = 17;
+
 (function () {
     // Your base, I'm in it!
     var originalAddClassMethod = jQuery.fn.addClass;
@@ -17,23 +19,69 @@ var lastValidRow = '';
     }
 })();
 
-$(function () { // DOM ready
+$(function () {
+    createCustomTables(tblRows, tblCols);
+});
+function preCreateTbl() {
+    createCustomTables(parseInt($('.tblrows').val()), parseInt($('.tblcolmns').val()));
+}
+function createCustomTables(tblRows, tblCols) {
+    $('#solveArea').html('');
+    switch (tblCols) {
+        case 2:
+            fontVW = 27;
+            break;
+        case 3:
+            fontVW = 18;
+            break;
+        case 4:
+            fontVW = 15;
+            break;
+        case 5:
+            fontVW = 13;
+            break;
+        case 6:
+            fontVW = 10;
+            break;
+    }
     //$(window).resize(on_resize);
     //init_game();
     createTable(tblRows, tblCols);
     createTableDragger(tblRows, tblCols);
     console.log($('.firstRow').innerWidth());
-    console.log(eval(parseInt($('.firstRow').innerWidth()) / tblCols));
     var fontSize = [
         {
             locator: '.row',
-            initialSize: 44
+            initialSize: 44,
+            changeFor: 'height',
+            changeValue: eval(parseInt($('.firstRow').innerWidth()) / tblCols) + 'px;'
+        },
+        {
+            locator: '.cell',
+            initialSize: 17,
+            changeFor: 'font-size'
+        },
+        {
+            locator: '#solveArea',
+            changeFor: 'height',
+            changeValue: eval($(window).height() * 70 / 100) + 'px;'
+        },
+        {
+            locator: '#headerArea',
+            changeFor: 'height',
+            changeValue: eval($(window).height() * 10 / 100) + 'px;'
         }
     ]
     $.each(fontSize, function (index, val) {
-        changeCss(val.locator, 'height:' + eval(parseInt($('.firstRow').innerWidth()) / tblCols) + 'px;');
+        if (val.locator === '.cell') {
+            changeCss(val.locator, val.changeFor + ':' + fontVW + 'vw;');
+        } else if (val.locator === '#solveArea') {
+            changeCss(val.locator, val.changeFor + ':' + val.changeValue);
+        } else {
+            changeCss(val.locator, val.changeFor + ':' + val.changeValue);
+        }
     })
-});
+}
 
 function createTable(rows, column) {
     var board = jQuery("<div>", {
@@ -51,7 +99,7 @@ function createTable(rows, column) {
         for (j = 0; j < column; j++) {
             var col = jQuery("<div>", {
                 class: 'cell prdrag_' + i + '_' + j,
-                text: 'A ' + i + '_' + j,
+                text: 'A',
                 row: i,
                 col: j
             });
@@ -63,7 +111,7 @@ function createTable(rows, column) {
         }
         board.append(row);
     }
-    $('body').append(board);
+    $('#solveArea').append(board);
 }
 
 function createTableDragger(rows, column) {
@@ -85,7 +133,7 @@ function createTableDragger(rows, column) {
             var dragger = jQuery("<div>", {
                 id: 'drag_' + i + '_' + j,
                 class: 'dragger',
-                text: 'B',
+                text: '',
                 row: i,
                 col: j
             });
@@ -94,12 +142,13 @@ function createTableDragger(rows, column) {
         }
         board.append(row);
     }
-    $('body').append(board);
+    $('#solveArea').append(board);
     bindEvents();
 }
 
 function bindEvents() {
     $("#boardDragger").find('.dragger').bind('cssClassChanged', function () {
+        //console.log('we are in changed class');
         var foundId = 'false';
 
         if ($.inArray($(this).attr('id'), divQueue) === -1) {
@@ -110,6 +159,7 @@ function bindEvents() {
             if ($('.pr' + $(this).attr('id')).hasClass('alert alert-success')) {
 
             } else {
+                console.log('changeddd')
                 if (isValidMove(dragRow, dragCol) === 'true') {
                     $('.pr' + $(this).attr('id')).addClass('alert alert-success');
                     divQueue.push($(this).attr('id'));
@@ -165,6 +215,12 @@ function bindEvents() {
     $("#boardDragger").find(".dragger").draggable({
         revert: true,
         containment: '#boardDragger',
+        start: function (event, ui) {
+            $(this).draggable("option", "cursorAt", {
+                left: Math.floor(this.clientWidth / 2),
+                top: Math.floor(this.clientHeight / 2)
+            });
+        },
         dragstart: function (event, ui) {
             console.log('drag start');
 //            event.preventDefault(event);
@@ -246,7 +302,7 @@ function isValidMove(dragRow, dragCol) {
         if (rightCol >= 0) {
             validMoves.push(lastValidRow + "_" + rightCol);
         }
-        //console.log(validMoves);
+        console.log(validMoves + " " + dragRow + "_" + dragCol);
         if ($.inArray(dragRow + "_" + dragCol, validMoves) !== -1) {
             lastValidRow = parseInt(dragRow);
             lastValidCol = parseInt(dragCol);

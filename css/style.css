@@ -8,6 +8,9 @@
 #boardDragger{
     
 }
+#solveArea{
+    position: relative;
+}
 .row{
   display: flex;
 }
@@ -15,10 +18,11 @@
   flex: 1;
   background:#eee;
   border: 1px solid #444;
-  padding: 15px;
+  /*padding: 5px;*/
   text-align: center;
-  margin: 4px;
+  margin: 5px;
   border-radius: 4px;
+  font-size: 17vw;
 }
 .dragger{
     flex: 1;
@@ -26,13 +30,19 @@
 #boardDragger .dragger{
     flex: 1;
     height: 100%;
-    font-size: 20px;
-    border-radius: 40px;
     border: 1px solid;
+    border-radius: 50%;
 }
 #boardDragger .cell{
     opacity: 0;
+    padding: 10px;
 }
 .alert-success{
     background-color: green;
+}
+#headerArea{
+    background-color: #03517B;
+    border-bottom: 5px solid #F6F6F9;
+    font-size: 2em;
+    background-image: linear-gradient( #22708E, #0578BB );
 }
