@@ -22,6 +22,7 @@ var fontVW = 17;
 $(function () {
     createCustomTables(tblRows, tblCols);
 });
+
 function preCreateTbl() {
     createCustomTables(parseInt($('.tblrows').val()), parseInt($('.tblcolmns').val()));
 }
@@ -86,7 +87,7 @@ function createCustomTables(tblRows, tblCols) {
 function createTable(rows, column) {
     var board = jQuery("<div>", {
         id: 'board',
-        class: 'table board'
+        class: 'board'
     });
     for (i = 0; i < rows; i++) {
         var widthCheckClass = '';
@@ -117,7 +118,7 @@ function createTable(rows, column) {
 function createTableDragger(rows, column) {
     var board = jQuery("<div>", {
         id: 'boardDragger',
-        class: 'table board'
+        class: 'board'
     });
     for (i = 0; i < rows; i++) {
         var row = jQuery("<div>", {
@@ -156,12 +157,12 @@ function bindEvents() {
             var dragCol = $(this).attr('col');
             //console.log(divQueue);
             //do stuff here
-            if ($('.pr' + $(this).attr('id')).hasClass('alert alert-success')) {
+            if ($('.pr' + $(this).attr('id')).hasClass('alert alert-selected')) {
 
             } else {
                 console.log('changeddd')
                 if (isValidMove(dragRow, dragCol) === 'true') {
-                    $('.pr' + $(this).attr('id')).addClass('alert alert-success');
+                    $('.pr' + $(this).attr('id')).addClass('alert alert-selected');
                     divQueue.push($(this).attr('id'));
                 }
             }
@@ -174,7 +175,7 @@ function bindEvents() {
                 lastValidRow = parseInt($('.pr' + second_last_elem).attr('row'));
                 lastValidCol = parseInt($('.pr' + second_last_elem).attr('col'));
                 var last_elem = divQueue[divQueue.length - 1];
-                $('.pr' + last_elem).removeClass('alert alert-success');
+                $('.pr' + last_elem).removeClass('alert alert-selected');
                 divQueue.pop();
                 console.log(divQueue);
             }
@@ -184,7 +185,7 @@ function bindEvents() {
 //            });
 //            for (i = 0; i < divQueue.length; i++) {
 //                if (foundId === 'true') {
-//                    $('.pr' + divQueue[i]).removeClass('alert alert-success');
+//                    $('.pr' + divQueue[i]).removeClass('alert alert-selected');
 //                    divQueue.splice(i, 1);
 //                }
 //                if (divQueue[i] === $(this).attr('id')) {
@@ -205,7 +206,7 @@ function bindEvents() {
                 lastValidRow = parseInt(cellRow);
                 lastValidCol = parseInt(cellCol);
                 var last_elem = divQueue[divQueue.length - 1];
-                $('.pr' + last_elem).removeClass('alert alert-success');
+                $('.pr' + last_elem).removeClass('alert alert-selected');
                 divQueue.pop();
                 console.log('Changed the cell css class');
             }
@@ -251,7 +252,7 @@ function bindEvents() {
         divQueue = [];
         lastValidCol = '';
         lastValidRow = '';
-        $('#board').find('div').removeClass('alert alert-success');
+        $('#board').find('div').removeClass('alert alert-selected');
         console.log('Touch start');
     });
 
@@ -259,7 +260,7 @@ function bindEvents() {
         console.log('Touch end');
     });
 
-    $('#board').find('div').removeClass('alert alert-success');
+    $('#board').find('div').removeClass('alert alert-selected');
 }
 
 function isValidMove(dragRow, dragCol) {
